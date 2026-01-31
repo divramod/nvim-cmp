@@ -154,8 +154,11 @@ end
 
 ---Prepare completion
 core.prepare = function(self)
+  local is_cmdline = api.is_cmdline_mode()
+  local cmdtype = vim.fn.getcmdtype()
   local cfg = config.get()
   vim.schedule(function()
+    vim.api.nvim_echo({{"DEBUG prepare: is_cmdline=" .. tostring(is_cmdline) .. " cmdtype=" .. tostring(cmdtype), "WarningMsg"}}, true, {})
     local mapping_keys = {}
     for k, v in pairs(cfg.mapping or {}) do
       local modes = {}

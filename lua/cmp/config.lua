@@ -77,6 +77,17 @@ end
 config.get = function()
   local global_config = config.global
 
+  -- DEBUG: Check cmdline config state
+  local cmdline_keys = {}
+  for k, _ in pairs(config.cmdline) do
+    table.insert(cmdline_keys, k)
+  end
+  local has_colon = config.cmdline[':'] ~= nil
+  local colon_has_mapping = has_colon and config.cmdline[':'].mapping ~= nil
+  vim.schedule(function()
+    vim.api.nvim_echo({{"DEBUG config.get: cmdline_keys=" .. table.concat(cmdline_keys, ",") .. " has_colon=" .. tostring(has_colon) .. " colon_has_mapping=" .. tostring(colon_has_mapping), "WarningMsg"}}, true, {})
+  end)
+
   -- The config object already has `revision` key.
   if #vim.tbl_keys(config.onetime) > 1 then
     local onetime_config = config.onetime
