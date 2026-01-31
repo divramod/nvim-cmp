@@ -356,6 +356,9 @@ cmp.setup = setmetatable({
 
 -- In InsertEnter autocmd, vim will detects mode=normal unexpectedly.
 local on_insert_enter = function()
+  vim.schedule(function()
+    vim.api.nvim_echo({{"DEBUG: on_insert_enter called, enabled=" .. tostring(config.enabled()), "WarningMsg"}}, true, {})
+  end)
   if config.enabled() then
     cmp.config.compare.scopes:update()
     cmp.config.compare.locality:update()

@@ -117,8 +117,14 @@ end
 ---Keypress handler
 core.on_keymap = function(self, keys, fallback)
   local mode = api.get_mode()
+  vim.schedule(function()
+    vim.api.nvim_echo({{"DEBUG on_keymap: keys=" .. tostring(keys) .. " mode=" .. tostring(mode), "WarningMsg"}}, true, {})
+  end)
   for key, mapping in pairs(config.get().mapping) do
     if keymap.equals(key, keys) and mapping[mode] then
+      vim.schedule(function()
+        vim.api.nvim_echo({{"DEBUG on_keymap: found mapping for " .. key, "WarningMsg"}}, true, {})
+      end)
       return mapping[mode](fallback)
     end
   end
@@ -148,7 +154,19 @@ end
 
 ---Prepare completion
 core.prepare = function(self)
-  for keys, mapping in pairs(config.get().mapping) do
+  local cfg = config.get()
+  vim.schedule(function()
+    local mapping_keys = {}
+    for k, v in pairs(cfg.mapping or {}) do
+      local modes = {}
+      for m in pairs(v) do
+        table.insert(modes, m)
+      end
+      table.insert(mapping_keys, k .. "(" .. table.concat(modes, ",") .. ")")
+    end
+    vim.api.nvim_echo({{"DEBUG prepare: mapping keys=" .. table.concat(mapping_keys, ", "), "WarningMsg"}}, true, {})
+  end)
+  for keys, mapping in pairs(cfg.mapping) do
     for mode in pairs(mapping) do
       keymap.listen(mode, keys, function(...)
         self:on_keymap(...)

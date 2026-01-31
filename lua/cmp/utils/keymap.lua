@@ -124,12 +124,21 @@ keymap.listen = function(mode, lhs, callback)
   lhs = keymap.normalize(keymap.to_keymap(lhs))
 
   local existing = keymap.get_map(mode, lhs)
+  vim.schedule(function()
+    vim.api.nvim_echo({{"DEBUG listen: mode=" .. mode .. " lhs=" .. lhs .. " existing.desc=" .. tostring(existing.desc), "WarningMsg"}}, true, {})
+  end)
   if existing.desc == 'cmp.utils.keymap.set_map' then
+    vim.schedule(function()
+      vim.api.nvim_echo({{"DEBUG listen: already registered, skipping", "WarningMsg"}}, true, {})
+    end)
     return
   end
 
   local bufnr = existing.buffer and vim.api.nvim_get_current_buf() or -1
   local fallback = keymap.fallback(bufnr, mode, existing)
+  vim.schedule(function()
+    vim.api.nvim_echo({{"DEBUG listen: setting up mapping for " .. lhs .. " bufnr=" .. bufnr, "WarningMsg"}}, true, {})
+  end)
   keymap.set_map(bufnr, mode, lhs, function()
     local ignore = false
     ignore = ignore or (mode == 'c' and vim.fn.getcmdtype() == '=')
